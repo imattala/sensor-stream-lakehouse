@@ -1,0 +1,25 @@
+# Java / Maven
+flink-job/target/
+*.class
+
+# Python
+__pycache__/
+*.pyc
+.venv/
+venv/
+*.egg-info/
+
+# Data quality reports
+data_quality/gx/uncommitted/
+data_quality/*.html
+
+# Docker volumes / local state
+.env
+minio-data/
+postgres-data/
+
+# OS / editor
+.DS_Store
+.idea/
+.vscode/
+*.swp
