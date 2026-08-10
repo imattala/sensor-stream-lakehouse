@@ -1,0 +1,23 @@
+{
+  "type": "record",
+  "name": "SensorReading",
+  "namespace": "dev.ibrahim.sensors",
+  "fields": [
+    {"name": "reading_id", "type": "string"},
+    {"name": "device_id", "type": "string"},
+    {
+      "name": "metric",
+      "type": {
+        "type": "enum",
+        "name": "Metric",
+        "symbols": ["TEMPERATURE", "HUMIDITY", "VIBRATION", "BATTERY"]
+      }
+    },
+    {"name": "value", "type": ["null", "double"], "default": null},
+    {"name": "unit", "type": "string"},
+    {
+      "name": "timestamp",
+      "type": {"type": "long", "logicalType": "timestamp-millis"}
+    }
+  ]
+}
