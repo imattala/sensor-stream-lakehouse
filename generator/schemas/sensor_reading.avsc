@@ -5,14 +5,7 @@
   "fields": [
     {"name": "reading_id", "type": "string"},
     {"name": "device_id", "type": "string"},
-    {
-      "name": "metric",
-      "type": {
-        "type": "enum",
-        "name": "Metric",
-        "symbols": ["TEMPERATURE", "HUMIDITY", "VIBRATION", "BATTERY"]
-      }
-    },
+    {"name": "metric", "type": "string"},
     {"name": "value", "type": ["null", "double"], "default": null},
     {"name": "unit", "type": "string"},
     {
