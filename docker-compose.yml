@@ -51,8 +51,8 @@ services:
       - "9000:9000"
       - "9001:9001"
     environment:
-      MINIO_ROOT_USER: minioadmin
-      MINIO_ROOT_PASSWORD: minioadmin
+      MINIO_ROOT_USER: ${MINIO_ROOT_USER:-minioadmin}
+      MINIO_ROOT_PASSWORD: ${MINIO_ROOT_PASSWORD:-minioadmin}
     volumes:
       - minio-data:/data
     healthcheck:
@@ -66,9 +66,12 @@ services:
     depends_on:
       minio:
         condition: service_healthy
+    environment:
+      MINIO_ROOT_USER: ${MINIO_ROOT_USER:-minioadmin}
+      MINIO_ROOT_PASSWORD: ${MINIO_ROOT_PASSWORD:-minioadmin}
     entrypoint: >
       /bin/sh -c "
-        mc alias set local http://minio:9000 minioadmin minioadmin &&
+        mc alias set local http://minio:9000 \"$$MINIO_ROOT_USER\" \"$$MINIO_ROOT_PASSWORD\" &&
         mc mb -p local/lakehouse
       "
 
@@ -78,13 +81,13 @@ services:
     ports:
       - "5432:5432"
     environment:
-      POSTGRES_USER: iceberg
-      POSTGRES_PASSWORD: iceberg
-      POSTGRES_DB: iceberg_catalog
+      POSTGRES_USER: ${ICEBERG_CATALOG_USER:-iceberg}
+      POSTGRES_PASSWORD: ${ICEBERG_CATALOG_PASSWORD:-iceberg}
+      POSTGRES_DB: ${ICEBERG_CATALOG_DB:-iceberg_catalog}
     volumes:
       - postgres-data:/var/lib/postgresql/data
     healthcheck:
-      test: ["CMD-SHELL", "pg_isready -U iceberg"]
+      test: ["CMD-SHELL", "pg_isready -U ${ICEBERG_CATALOG_USER:-iceberg}"]
       interval: 10s
       timeout: 5s
       retries: 10
@@ -118,9 +121,9 @@ services:
       - "8082:8081"
     command: jobmanager
     environment:
-      AWS_REGION: us-east-1
-      AWS_ACCESS_KEY_ID: minioadmin
-      AWS_SECRET_ACCESS_KEY: minioadmin
+      AWS_REGION: ${AWS_REGION:-us-east-1}
+      AWS_ACCESS_KEY_ID: ${AWS_ACCESS_KEY_ID:-minioadmin}
+      AWS_SECRET_ACCESS_KEY: ${AWS_SECRET_ACCESS_KEY:-minioadmin}
       FLINK_PROPERTIES: |
         jobmanager.rpc.address: flink-jobmanager
         execution.checkpointing.interval: 30000
@@ -135,9 +138,9 @@ services:
       - flink-jobmanager
     command: taskmanager
     environment:
-      AWS_REGION: us-east-1
-      AWS_ACCESS_KEY_ID: minioadmin
-      AWS_SECRET_ACCESS_KEY: minioadmin
+      AWS_REGION: ${AWS_REGION:-us-east-1}
+      AWS_ACCESS_KEY_ID: ${AWS_ACCESS_KEY_ID:-minioadmin}
+      AWS_SECRET_ACCESS_KEY: ${AWS_SECRET_ACCESS_KEY:-minioadmin}
       FLINK_PROPERTIES: |
         jobmanager.rpc.address: flink-jobmanager
         taskmanager.numberOfTaskSlots: 2
@@ -166,19 +169,19 @@ services:
     volumes:
       - ./flink-job/config:/opt/flink-job/config
     environment:
-      AWS_REGION: us-east-1
+      AWS_REGION: ${AWS_REGION:-us-east-1}
       KAFKA_BOOTSTRAP_SERVERS: kafka:9092
       SCHEMA_REGISTRY_URL: http://schema-registry:8081
       POSTGRES_HOST: postgres
       POSTGRES_PORT: "5432"
-      ICEBERG_DB: iceberg_catalog
-      ICEBERG_JDBC_USER: iceberg
-      ICEBERG_JDBC_PASSWORD: iceberg
+      ICEBERG_DB: ${ICEBERG_CATALOG_DB:-iceberg_catalog}
+      ICEBERG_JDBC_USER: ${ICEBERG_CATALOG_USER:-iceberg}
+      ICEBERG_JDBC_PASSWORD: ${ICEBERG_CATALOG_PASSWORD:-iceberg}
       ICEBERG_WAREHOUSE: s3://lakehouse/
       S3_ENDPOINT: http://minio:9000
-      S3_REGION: us-east-1
-      AWS_ACCESS_KEY_ID: minioadmin
-      AWS_SECRET_ACCESS_KEY: minioadmin
+      S3_REGION: ${AWS_REGION:-us-east-1}
+      AWS_ACCESS_KEY_ID: ${AWS_ACCESS_KEY_ID:-minioadmin}
+      AWS_SECRET_ACCESS_KEY: ${AWS_SECRET_ACCESS_KEY:-minioadmin}
     command: >
       /bin/bash -c "
         while true; do
