@@ -39,6 +39,15 @@ docker compose up -d
 
 (Full instructions land as each milestone completes.)
 
+### Local UIs
+
+| Service            | URL                          |
+|---------------------|-------------------------------|
+| Kafka UI (Kafbat)   | http://localhost:8085         |
+| Flink dashboard     | http://localhost:8082         |
+| MinIO console        | http://localhost:9001         |
+| Schema Registry     | http://localhost:8081/subjects |
+
 ## License
 
 MIT
