@@ -31,6 +31,14 @@ sensor-generator (Python, Avro)
 
 Work in progress — see the [issues](../../issues) for the milestone breakdown.
 
+- [x] M1 — Ingest: docker-compose + sensor generator
+- [x] M2 — Stream to lake: Flink SQL raw passthrough to Iceberg
+- [ ] M3 — Windowed aggregation
+- [ ] M4 — Dead-letter handling
+- [ ] M5 — Formal data quality (Great Expectations)
+- [ ] M6 — Observability
+- [ ] M7 — Polish
+
 ## Running it
 
 ```
