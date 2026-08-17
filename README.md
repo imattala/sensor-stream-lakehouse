@@ -41,8 +41,16 @@ Work in progress — see the [issues](../../issues) for the milestone breakdown.
 
 ## Running it
 
+**Prerequisites:** Docker + Docker Compose. No cloud account needed — Kafka, Iceberg's catalog (Postgres) and storage (MinIO) all run locally.
+
 ```
 docker compose up -d
+```
+
+Stop everything with:
+
+```
+docker compose down
 ```
 
 (Full instructions land as each milestone completes.)
