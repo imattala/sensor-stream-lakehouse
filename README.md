@@ -1,5 +1,11 @@
 # sensor-stream-lakehouse
 
+![Kafka](https://img.shields.io/badge/Kafka-KRaft-231F20?logo=apachekafka&logoColor=white)
+![Flink](https://img.shields.io/badge/Flink-SQL-E6526F?logo=apacheflink&logoColor=white)
+![Iceberg](https://img.shields.io/badge/Apache-Iceberg-0468DB)
+![Docker Compose](https://img.shields.io/badge/Docker-Compose-2496ED?logo=docker&logoColor=white)
+![License: MIT](https://img.shields.io/badge/License-MIT-yellow.svg)
+
 A streaming data pipeline for synthetic IoT sensor data: Kafka → Flink SQL → Apache Iceberg, with a formal data-quality layer (Great Expectations) and observability (Prometheus/Grafana/OpenTelemetry).
 
 Built as a portfolio project, one milestone at a time. See open issues/PRs for progress.
