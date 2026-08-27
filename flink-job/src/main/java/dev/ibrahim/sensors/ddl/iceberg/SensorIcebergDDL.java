@@ -20,6 +20,26 @@ public class SensorIcebergDDL {
                 ")";
     }
 
+    public static String createAggTable() {
+        return "CREATE TABLE IF NOT EXISTS `iceberg_catalog`.`default`.`sensor_readings_1m_agg` (\n" +
+                "  `device_id`      STRING,\n" +
+                "  `metric`         STRING,\n" +
+                "  `window_start`   TIMESTAMP(3),\n" +
+                "  `window_end`     TIMESTAMP(3),\n" +
+                "  `avg_value`      DOUBLE,\n" +
+                "  `min_value`      DOUBLE,\n" +
+                "  `max_value`      DOUBLE,\n" +
+                "  `reading_count`  BIGINT,\n" +
+                "  `day`            STRING\n" +
+                ") PARTITIONED BY (`day`) " +
+                "WITH (\n" +
+                "  'format-version' = '2',\n" +
+                "  'write.format.default' = 'parquet',\n" +
+                "  'write.distribution-mode' = 'hash',\n" +
+                "  'write.upsert.enabled' = 'false'\n" +
+                ")";
+    }
+
     public static String insertRawToIceberg() {
         return "INSERT INTO `iceberg_catalog`.`default`.`sensor_readings_raw`\n" +
                 "SELECT\n" +
