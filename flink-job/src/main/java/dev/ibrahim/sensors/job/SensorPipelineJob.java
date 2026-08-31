@@ -23,10 +23,13 @@ public class SensorPipelineJob extends FlinkJobBase {
         // ── Kafka source ──────────────────────────────────────────────────
         TableUtils.recreateTable(tableEnv, SensorKafkaDDL.rawSource(bs, sr));
 
-        // ── Iceberg sink ──────────────────────────────────────────────────
+        // ── Iceberg sinks ─────────────────────────────────────────────────
         TableUtils.recreateTable(tableEnv, SensorIcebergDDL.createRawTable());
+        TableUtils.recreateTable(tableEnv, SensorIcebergDDL.createAggTable());
 
-        // ── Raw passthrough ───────────────────────────────────────────────
-        TableUtils.insertData(tableEnv, SensorIcebergDDL.insertRawToIceberg());
+        // ── Raw passthrough + 1-min windowed aggregation ─────────────────
+        TableUtils.insertAll(tableEnv,
+                SensorIcebergDDL.insertRawToIceberg(),
+                SensorIcebergDDL.insertAggToIceberg());
     }
 }

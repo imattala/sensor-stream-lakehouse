@@ -40,6 +40,24 @@ public class SensorIcebergDDL {
                 ")";
     }
 
+    public static String insertAggToIceberg() {
+        return "INSERT INTO `iceberg_catalog`.`default`.`sensor_readings_1m_agg`\n" +
+                "SELECT\n" +
+                "  `device_id`,\n" +
+                "  `metric`,\n" +
+                "  `window_start`,\n" +
+                "  `window_end`,\n" +
+                "  AVG(`value`) AS `avg_value`,\n" +
+                "  MIN(`value`) AS `min_value`,\n" +
+                "  MAX(`value`) AS `max_value`,\n" +
+                "  COUNT(*) AS `reading_count`,\n" +
+                "  DATE_FORMAT(`window_start`, 'yyyy-MM-dd') AS `day`\n" +
+                "FROM TABLE(\n" +
+                "  TUMBLE(TABLE kafka_sensor_readings_source, DESCRIPTOR(`timestamp`), INTERVAL '1' MINUTE)\n" +
+                ")\n" +
+                "GROUP BY `device_id`, `metric`, `window_start`, `window_end`";
+    }
+
     public static String insertRawToIceberg() {
         return "INSERT INTO `iceberg_catalog`.`default`.`sensor_readings_raw`\n" +
                 "SELECT\n" +
