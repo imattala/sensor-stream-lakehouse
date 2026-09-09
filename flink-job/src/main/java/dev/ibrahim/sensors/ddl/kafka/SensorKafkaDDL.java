@@ -1,5 +1,7 @@
 package dev.ibrahim.sensors.ddl.kafka;
 
+import dev.ibrahim.sensors.ddl.SensorAnomalyRules;
+
 public class SensorKafkaDDL {
 
     public static String rawSource(String bs, String sr) {
@@ -37,5 +39,12 @@ public class SensorKafkaDDL {
                 "  'format' = 'avro-confluent',\n" +
                 "  'avro-confluent.url' = '" + sr + "'\n" +
                 ")";
+    }
+
+    public static String insertMalformedToDlq() {
+        return "INSERT INTO sensor_readings_dlq\n" +
+                "SELECT `reading_id`, `device_id`, `metric`, `value`, `unit`, `timestamp`\n" +
+                "FROM kafka_sensor_readings_source\n" +
+                "WHERE " + SensorAnomalyRules.IS_MALFORMED;
     }
 }

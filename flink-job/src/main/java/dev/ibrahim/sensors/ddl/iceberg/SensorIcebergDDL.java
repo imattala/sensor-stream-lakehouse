@@ -1,5 +1,7 @@
 package dev.ibrahim.sensors.ddl.iceberg;
 
+import dev.ibrahim.sensors.ddl.SensorAnomalyRules;
+
 public class SensorIcebergDDL {
 
     public static String createRawTable() {
@@ -68,6 +70,7 @@ public class SensorIcebergDDL {
                 "  `unit`,\n" +
                 "  `timestamp` AS `event_time`,\n" +
                 "  DATE_FORMAT(`timestamp`, 'yyyy-MM-dd') AS `day`\n" +
-                "FROM kafka_sensor_readings_source";
+                "FROM kafka_sensor_readings_source\n" +
+                "WHERE NOT (" + SensorAnomalyRules.IS_MALFORMED + ")";
     }
 }

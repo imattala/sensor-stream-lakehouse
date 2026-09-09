@@ -20,16 +20,18 @@ public class SensorPipelineJob extends FlinkJobBase {
         String bs = kafkaProps.getProperty("bootstrap.servers");
         String sr = kafkaProps.getProperty("schema.registry.url");
 
-        // ── Kafka source ──────────────────────────────────────────────────
+        // ── Kafka source + DLQ sink ──────────────────────────────────────
         TableUtils.recreateTable(tableEnv, SensorKafkaDDL.rawSource(bs, sr));
+        TableUtils.recreateTable(tableEnv, SensorKafkaDDL.dlqSink(bs, sr));
 
         // ── Iceberg sinks ─────────────────────────────────────────────────
         TableUtils.recreateTable(tableEnv, SensorIcebergDDL.createRawTable());
         TableUtils.recreateTable(tableEnv, SensorIcebergDDL.createAggTable());
 
-        // ── Raw passthrough + 1-min windowed aggregation ─────────────────
+        // ── Raw passthrough + 1-min windowed aggregation + DLQ routing ───
         TableUtils.insertAll(tableEnv,
                 SensorIcebergDDL.insertRawToIceberg(),
-                SensorIcebergDDL.insertAggToIceberg());
+                SensorIcebergDDL.insertAggToIceberg(),
+                SensorKafkaDDL.insertMalformedToDlq());
     }
 }
