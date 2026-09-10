@@ -1,5 +1,7 @@
 package dev.ibrahim.sensors.ddl.kafka;
 
+import dev.ibrahim.sensors.ddl.SensorAnomalyRules;
+
 public class SensorKafkaDDL {
 
     public static String rawSource(String bs, String sr) {
@@ -20,5 +22,29 @@ public class SensorKafkaDDL {
                 "  'format' = 'avro-confluent',\n" +
                 "  'avro-confluent.url' = '" + sr + "'\n" +
                 ")";
+    }
+
+    public static String dlqSink(String bs, String sr) {
+        return "CREATE TABLE IF NOT EXISTS sensor_readings_dlq (\n" +
+                "  `reading_id` STRING,\n" +
+                "  `device_id`  STRING,\n" +
+                "  `metric`     STRING,\n" +
+                "  `value`      DOUBLE,\n" +
+                "  `unit`       STRING,\n" +
+                "  `timestamp`  TIMESTAMP(3)\n" +
+                ") WITH (\n" +
+                "  'connector' = 'kafka',\n" +
+                "  'topic' = 'sensor-readings-dlq',\n" +
+                "  'properties.bootstrap.servers' = '" + bs + "',\n" +
+                "  'format' = 'avro-confluent',\n" +
+                "  'avro-confluent.url' = '" + sr + "'\n" +
+                ")";
+    }
+
+    public static String insertMalformedToDlq() {
+        return "INSERT INTO sensor_readings_dlq\n" +
+                "SELECT `reading_id`, `device_id`, `metric`, `value`, `unit`, `timestamp`\n" +
+                "FROM kafka_sensor_readings_source\n" +
+                "WHERE " + SensorAnomalyRules.IS_MALFORMED;
     }
 }
