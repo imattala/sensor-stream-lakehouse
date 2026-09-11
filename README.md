@@ -70,6 +70,9 @@ docker compose down
 | MinIO console        | http://localhost:9001         |
 | Schema Registry     | http://localhost:8081/subjects |
 
+Want to query the Iceberg tables with real SQL instead of scripts? See
+[docs/querying-with-trino.md](docs/querying-with-trino.md) for a local Trino setup.
+
 ## License
 
 MIT
