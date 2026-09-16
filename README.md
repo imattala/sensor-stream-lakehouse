@@ -41,7 +41,7 @@ Work in progress — see the [issues](../../issues) for the milestone breakdown.
 - [x] M2 — Stream to lake: Flink SQL raw passthrough to Iceberg
 - [x] M3 — Windowed aggregation
 - [x] M4 — Dead-letter handling
-- [ ] M5 — Formal data quality (Great Expectations)
+- [x] M5 — Formal data quality (Great Expectations)
 - [ ] M6 — Observability
 - [ ] M7 — Polish
 
@@ -72,6 +72,9 @@ docker compose down
 
 Want to query the Iceberg tables with real SQL instead of scripts? See
 [docs/querying-with-trino.md](docs/querying-with-trino.md) for a local Trino setup.
+
+Data quality checks (Great Expectations) live in
+[data_quality/](data_quality/README.md).
 
 ## License
 
