@@ -218,6 +218,36 @@ services:
         done
       "
 
+  # ── Observability ────────────────────────────────────────────────────────
+  otel-collector:
+    image: otel/opentelemetry-collector-contrib:latest
+    container_name: sensor-otel-collector
+    command: ["--config=/etc/otel-collector-config.yml"]
+    volumes:
+      - ./monitoring/otel-collector-config.yml:/etc/otel-collector-config.yml
+    ports:
+      - "4317:4317"
+      - "4318:4318"
+      - "8889:8889"
+
+  prometheus:
+    image: prom/prometheus:latest
+    container_name: sensor-prometheus
+    volumes:
+      - ./monitoring/prometheus.yml:/etc/prometheus/prometheus.yml
+    ports:
+      - "9090:9090"
+    depends_on:
+      - otel-collector
+
+  grafana:
+    image: grafana/grafana:latest
+    container_name: sensor-grafana
+    ports:
+      - "3000:3000"
+    depends_on:
+      - prometheus
+
 volumes:
   minio-data:
   postgres-data:
