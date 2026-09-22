@@ -69,6 +69,8 @@ docker compose down
 | Flink dashboard     | http://localhost:8082         |
 | MinIO console        | http://localhost:9001         |
 | Schema Registry     | http://localhost:8081/subjects |
+| Prometheus (M6, in progress) | http://localhost:9090 |
+| Grafana (M6, in progress)    | http://localhost:3000 |
 
 Want to query the Iceberg tables with real SQL instead of scripts? See
 [docs/querying-with-trino.md](docs/querying-with-trino.md) for a local Trino setup.
