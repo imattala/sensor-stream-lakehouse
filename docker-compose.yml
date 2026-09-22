@@ -219,6 +219,16 @@ services:
       "
 
   # ── Observability ────────────────────────────────────────────────────────
+  kafka-exporter:
+    image: danielqsj/kafka-exporter:latest
+    container_name: sensor-kafka-exporter
+    command: ["--kafka.server=kafka:9092"]
+    depends_on:
+      kafka:
+        condition: service_healthy
+    ports:
+      - "9308:9308"
+
   otel-collector:
     image: otel/opentelemetry-collector-contrib:latest
     container_name: sensor-otel-collector
