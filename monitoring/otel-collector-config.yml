@@ -12,6 +12,10 @@ receivers:
           scrape_interval: 15s
           static_configs:
             - targets: ["kafka-exporter:9308"]
+        - job_name: flink
+          scrape_interval: 15s
+          static_configs:
+            - targets: ["flink-jobmanager:9249", "flink-taskmanager:9249"]
 
 exporters:
   prometheus:

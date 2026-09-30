@@ -131,6 +131,7 @@ services:
     container_name: sensor-flink-jobmanager
     ports:
       - "8082:8081"
+      - "9249:9249"
     command: jobmanager
     environment:
       AWS_REGION: us-east-1
@@ -139,6 +140,9 @@ services:
       FLINK_PROPERTIES: |
         jobmanager.rpc.address: flink-jobmanager
         execution.checkpointing.interval: 30000
+        metrics.reporters: prom
+        metrics.reporter.prom.factory.class: org.apache.flink.metrics.prometheus.PrometheusReporterFactory
+        metrics.reporter.prom.port: 9249
 
   flink-taskmanager:
     image: sensor-flink-job
@@ -149,6 +153,8 @@ services:
     depends_on:
       - flink-jobmanager
     command: taskmanager
+    ports:
+      - "9250:9249"
     environment:
       AWS_REGION: us-east-1
       AWS_ACCESS_KEY_ID: minioadmin
@@ -157,6 +163,9 @@ services:
         jobmanager.rpc.address: flink-jobmanager
         taskmanager.numberOfTaskSlots: 2
         execution.checkpointing.interval: 30000
+        metrics.reporters: prom
+        metrics.reporter.prom.factory.class: org.apache.flink.metrics.prometheus.PrometheusReporterFactory
+        metrics.reporter.prom.port: 9249
 
   # ── Flink job submitter (submits + resubmits on failure) ────────────────────
   sensor-job:
