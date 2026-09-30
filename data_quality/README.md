@@ -12,6 +12,9 @@ asset, backed by PyIceberg) — no separate export step.
   data, using synthetic batches mirroring `generator/generate.py`'s anomaly
   types (raw data no longer contains real anomalies by the time it reaches
   here, since M4's DLQ routing already strips nulls/out-of-range values)
+- `push_metrics.py` — pushes each table's pass/fail as an OTLP gauge
+  (`ge_checkpoint_success{table=...}`) to the OTel Collector (M6), so
+  data-quality status shows up next to Kafka/Flink infra health
 
 ## Setup
 
@@ -23,10 +26,12 @@ python3 -m venv .venv
 ## Run
 
 Requires `sensor-postgres` and `sensor-minio` running
-(`docker compose up -d postgres minio` from the repo root).
+(`docker compose up -d postgres minio` from the repo root). Pushing metrics
+also requires `otel-collector` running; pass `--skip-metrics` to validate
+without it.
 
 ```bash
-.venv/bin/python3 run_checkpoint.py [--freshness-minutes N]   # default 60
+.venv/bin/python3 run_checkpoint.py [--freshness-minutes N] [--skip-metrics]   # freshness default 60
 .venv/bin/python3 test_suite_detects_anomalies.py
 ```
 

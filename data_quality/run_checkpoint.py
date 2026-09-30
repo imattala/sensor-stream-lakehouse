@@ -13,6 +13,7 @@ import sys
 
 import great_expectations as gx
 
+from push_metrics import push_checkpoint_results
 from suites import build_agg_suite, build_raw_suite
 
 DATA_QUALITY_DIR = os.path.dirname(os.path.abspath(__file__))
@@ -37,12 +38,17 @@ def main():
     parser = argparse.ArgumentParser()
     parser.add_argument("--freshness-minutes", type=int, default=60,
                          help="how stale the newest row is allowed to be")
+    parser.add_argument("--otlp-endpoint", default="localhost:4317",
+                         help="OTel Collector OTLP gRPC endpoint to push checkpoint metrics to")
+    parser.add_argument("--skip-metrics", action="store_true",
+                         help="don't push results to the OTel Collector (e.g. if it isn't running)")
     args = parser.parse_args()
 
     context = gx.get_context(mode="file", project_root_dir=DATA_QUALITY_DIR)
     data_source = context.data_sources.add_or_update_pandas("iceberg_lakehouse")
 
     overall_success = True
+    table_results = {}
     report = {"tables": {}}
 
     for table_name, table_identifier, build_suite in TABLES:
@@ -64,6 +70,7 @@ def main():
 
         result = checkpoint.run()
         overall_success = overall_success and result.success
+        table_results[table_name] = result.success
         report["tables"][table_name] = result.describe_dict()
 
         status = "PASSED" if result.success else "FAILED"
@@ -79,6 +86,13 @@ def main():
     data_docs_sites = context.build_data_docs()
     for site_name, url in data_docs_sites.items():
         print(f"HTML report ({site_name}): {url}")
+
+    if not args.skip_metrics:
+        try:
+            push_checkpoint_results(table_results, otlp_endpoint=args.otlp_endpoint)
+            print(f"\nPushed checkpoint metrics to {args.otlp_endpoint}")
+        except Exception as e:
+            print(f"\nWARNING: failed to push checkpoint metrics: {e}")
 
     sys.exit(0 if overall_success else 1)
 
