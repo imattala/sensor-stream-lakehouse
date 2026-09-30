@@ -9,6 +9,11 @@ RUN curl -fSL -o /opt/flink/lib/hadoop-client-api-3.3.6.jar \
     curl -fSL -o /opt/flink/lib/hadoop-client-runtime-3.3.6.jar \
       https://repo1.maven.org/maven2/org/apache/hadoop/hadoop-client-runtime/3.3.6/hadoop-client-runtime-3.3.6.jar
 
+# Prometheus metrics reporter - not bundled in the base image's opt/, must be added to lib/
+# so Flink picks it up (reporters aren't loaded via the plugins/ mechanism).
+RUN curl -fSL -o /opt/flink/lib/flink-metrics-prometheus-1.20.0.jar \
+      https://repo1.maven.org/maven2/org/apache/flink/flink-metrics-prometheus/1.20.0/flink-metrics-prometheus-1.20.0.jar
+
 WORKDIR /opt/flink-job
 
 COPY target/sensor-flink-job-1.0-SNAPSHOT.jar /opt/flink-job/

@@ -1,0 +1,28 @@
+receivers:
+  otlp:
+    protocols:
+      grpc:
+        endpoint: 0.0.0.0:4317
+      http:
+        endpoint: 0.0.0.0:4318
+  prometheus:
+    config:
+      scrape_configs:
+        - job_name: kafka-exporter
+          scrape_interval: 15s
+          static_configs:
+            - targets: ["kafka-exporter:9308"]
+        - job_name: flink
+          scrape_interval: 15s
+          static_configs:
+            - targets: ["flink-jobmanager:9249", "flink-taskmanager:9249"]
+
+exporters:
+  prometheus:
+    endpoint: 0.0.0.0:8889
+
+service:
+  pipelines:
+    metrics:
+      receivers: [otlp, prometheus]
+      exporters: [prometheus]
