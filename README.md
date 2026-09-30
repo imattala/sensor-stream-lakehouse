@@ -42,7 +42,7 @@ Work in progress — see the [issues](../../issues) for the milestone breakdown.
 - [x] M3 — Windowed aggregation
 - [x] M4 — Dead-letter handling
 - [x] M5 — Formal data quality (Great Expectations)
-- [ ] M6 — Observability
+- [x] M6 — Observability
 - [ ] M7 — Polish
 
 ## Running it
@@ -69,8 +69,8 @@ docker compose down
 | Flink dashboard     | http://localhost:8082         |
 | MinIO console        | http://localhost:9001         |
 | Schema Registry     | http://localhost:8081/subjects |
-| Prometheus (M6, in progress) | http://localhost:9090 |
-| Grafana (M6, in progress)    | http://localhost:3000 |
+| Prometheus          | http://localhost:9090         |
+| Grafana (admin/admin) | http://localhost:3000       |
 
 Want to query the Iceberg tables with real SQL instead of scripts? See
 [docs/querying-with-trino.md](docs/querying-with-trino.md) for a local Trino setup.
