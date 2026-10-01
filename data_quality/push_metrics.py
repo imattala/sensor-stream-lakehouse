@@ -15,8 +15,15 @@ from opentelemetry.sdk.resources import Resource
 def push_checkpoint_results(results: dict, otlp_endpoint: str = "localhost:4317") -> None:
     exporter = OTLPMetricExporter(endpoint=otlp_endpoint, insecure=True)
     reader = PeriodicExportingMetricReader(exporter, export_interval_millis=1000)
+    # A fixed service.instance.id so each run reports under the same series
+    # instead of a fresh one (the SDK otherwise generates a random UUID per
+    # process), so the dashboard panel shows the latest run, not one stat per
+    # run that's ever executed.
     provider = MeterProvider(
-        resource=Resource.create({"service.name": "sensor-lakehouse-data-quality"}),
+        resource=Resource.create({
+            "service.name": "sensor-lakehouse-data-quality",
+            "service.instance.id": "sensor-lakehouse-data-quality",
+        }),
         metric_readers=[reader],
     )
     meter = provider.get_meter("data_quality.ge_checkpoint")
