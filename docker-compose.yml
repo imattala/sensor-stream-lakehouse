@@ -264,6 +264,11 @@ services:
     container_name: sensor-grafana
     ports:
       - "3000:3000"
+    environment:
+      # Local-only demo stack, no real auth needed - lets anyone open the
+      # dashboard as a Viewer without logging in.
+      GF_AUTH_ANONYMOUS_ENABLED: "true"
+      GF_AUTH_ANONYMOUS_ORG_ROLE: Viewer
     volumes:
       - ./monitoring/grafana/provisioning:/etc/grafana/provisioning
       - ./monitoring/grafana/dashboards:/etc/grafana/dashboards

@@ -1,3 +1,10 @@
+FROM maven:3.9-eclipse-temurin-17 AS build
+WORKDIR /build
+COPY pom.xml .
+RUN mvn -B dependency:go-offline
+COPY src ./src
+RUN mvn -B package -DskipTests
+
 FROM flink:1.20.0-scala_2.12-java17
 
 # Iceberg's FlinkCatalogFactory unconditionally touches org.apache.hadoop.conf.Configuration
@@ -16,4 +23,4 @@ RUN curl -fSL -o /opt/flink/lib/flink-metrics-prometheus-1.20.0.jar \
 
 WORKDIR /opt/flink-job
 
-COPY target/sensor-flink-job-1.0-SNAPSHOT.jar /opt/flink-job/
+COPY --from=build /build/target/sensor-flink-job-1.0-SNAPSHOT.jar /opt/flink-job/
