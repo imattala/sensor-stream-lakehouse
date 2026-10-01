@@ -43,23 +43,31 @@ Work in progress — see the [issues](../../issues) for the milestone breakdown.
 - [x] M4 — Dead-letter handling
 - [x] M5 — Formal data quality (Great Expectations)
 - [x] M6 — Observability
-- [ ] M7 — Polish
+- [x] M7 — Polish
+
+## What this demonstrates
+
+- **Streaming SQL, not just batch**: Flink SQL over a `StreamTableEnvironment` doing raw passthrough, a 1-minute tumbling-window aggregation, and conditional routing to a dead-letter topic - all as one job sharing a single Kafka source scan (not three competing consumers).
+- **A real lakehouse, not a toy format**: Apache Iceberg on a JDBC catalog (Postgres) + S3-compatible storage (MinIO), queryable from Flink, [PyIceberg/pandas](data_quality/), and plain SQL via [Trino](docs/querying-with-trino.md) - the same table, three different engines.
+- **Data quality as code**: a Great Expectations suite (not ad hoc scripts) that's proven to actually catch bad data via synthetic test batches, and that caught a genuine gap in the live pipeline (duplicate deliveries M4's DLQ doesn't cover) - documented rather than hidden.
+- **Observability without a Prometheus-scrapes-everything mess**: a single OTel Collector aggregates Kafka lag (via kafka-exporter), Flink job health (via its native Prometheus reporter), and the data-quality suite's own pass/fail (pushed via OTLP) - Prometheus only ever scrapes the collector.
+- **Reproducible by design**: `docker compose up` on a bare clone builds and runs the whole pipeline, no local toolchain or manual build step required.
 
 ## Running it
 
 **Prerequisites:** Docker + Docker Compose. No cloud account needed — Kafka, Iceberg's catalog (Postgres) and storage (MinIO) all run locally.
 
 ```
-docker compose up -d
+docker compose up -d --build
+# or: make up
 ```
 
 Stop everything with:
 
 ```
 docker compose down
+# or: make down
 ```
-
-(Full instructions land as each milestone completes.)
 
 ### Local UIs
 
@@ -77,6 +85,19 @@ Want to query the Iceberg tables with real SQL instead of scripts? See
 
 Data quality checks (Great Expectations) live in
 [data_quality/](data_quality/README.md).
+
+## Screenshots
+
+Grafana dashboard - Kafka consumer lag, Flink job running time, restarts,
+and live GE checkpoint pass/fail per table:
+
+![Grafana dashboard](docs/screenshots/grafana-dashboard.png)
+
+A Great Expectations validation result - this run genuinely failed,
+catching real duplicate deliveries in `sensor_readings_raw` (see
+[data_quality/README.md](data_quality/README.md#known-finding)):
+
+![GE validation report](docs/screenshots/ge-report.png)
 
 ## License
 
